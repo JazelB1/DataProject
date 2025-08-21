@@ -2,20 +2,19 @@ library(readxl)
 library(aws.s3)
    
    # --- Configuration ---
-   # Replace with your actual AWS credentials and bucket details
 aws_access_key <- Sys.getenv("AWS_ACCESS_KEY_ID")
 aws_secret_key <- Sys.getenv("AWS_SECRET_ACCESS_KEY")
 region_aws <-Sys.getenv("AWS_REGION")
-bucket_name <- "new-apprentice-raw-data" # Replace with your bucket name
-s3_prefix <- "raw_excel_data/"           # Optional: Add a prefix/folder in your bucket
+bucket_name <- "new-apprentice-raw-data" 
+s3_prefix <- "raw_excel_data/"          
    
      # Path to the directory containing your Excel files
-excel_directory <- "/Users/jazelbarquero/Documents/R Studio Project/New Apprentices - Raw Data" # Replace with the actual path
+excel_directory <- "/Users/jazelbarquero/Documents/R Studio Project/New Apprentices - Raw Data"
      
        # --- Function to upload a single Excel file to S3 ---
 upload_excel_to_s3 <- function(file_path, bucket, key) {
   tryCatch({
-    # Read the Excel file (you can choose a specific sheet if needed)
+    # Read the Excel file 
     excel_data <- read_excel(file_path)
                      
      # Create a temporary CSV file in memory
@@ -50,7 +49,7 @@ excel_files <- list.files(path = excel_directory, pattern = "\\.(xlsx|xls)$", fu
 if (length(excel_files) > 0) {
   cat("Found", length(excel_files), "Excel files to upload...\n")
   for (file in excel_files) {
-    # Create the S3 object key (filename with optional prefix)
+    # Create the S3 object key 
     file_name_without_extension <- tools::file_path_sans_ext(basename(file))
     s3_key <- paste0(s3_prefix, file_name_without_extension, ".csv")
                          

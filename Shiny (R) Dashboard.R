@@ -30,22 +30,22 @@ top_occupation_plot <- ggplot(top_occupations, aes(x = Occupation, y = `Total ap
   geom_bar(stat = "identity", fill = "steelblue") +
   labs(title = "Top 10 Occupations by Total Number of Apprentices", x = "Occupation", y = "Total Apprentice Number") +
   theme_minimal() 
-#print top programs
-print(top_occupation_plot)
+
 
 #create a line chart that shows the number of apprentices by fiscal year
 apprentices_by_year <- data %>%
   group_by(`Fiscal Year`) %>%
   summarise(`Total apprentice number` = n()) %>%
   arrange(`Fiscal Year`)
+
 #ggplot line chart
 apprentices_by_year_plot <- ggplot(apprentices_by_year, aes(x = `Fiscal Year`, y = `Total apprentice number`)) +
   geom_line(color = "blue", size = 1) +
   geom_point(color = "red", size = 2) +
   labs(title = "Number of Apprentices by Fiscal Year", x = "Fiscal Year", y = "Total Apprentice Number") +
   theme_minimal()
-#print apprentices by year
-print(apprentices_by_year_plot)
+
+
 #create a detail table that shows total number of apprentices by fiscal year and state  
 apprentices_detail_table <- data %>%
   group_by(`Fiscal Year`, State) %>%
@@ -54,8 +54,7 @@ apprentices_detail_table <- data %>%
   summarise(`Total apprentice number` = n()) %>%
   arrange(State, `Fiscal Year`) %>%
   mutate(`Fiscal Year` = as.integer(`Fiscal Year`)) # remove .00 from year      
-# Print the detail table
-print(apprentices_detail_table)
+
 # Create a Shiny app to display the plots and table
 ui <- fluidPage(
   theme = shinytheme("flatly"),
@@ -134,11 +133,3 @@ server <- function(input, output) {
 }           
 # Run the Shiny app
 shinyApp(ui = ui, server = server)
-# Save the app as an R script file
-# saveRDS(app, file = "NewApprenticeApp.rds")
-# Note: The above line is commented out because saving the app as an RDS file is
-# not necessary for running the app. The app can be run directly from this script.
-# To run the app, simply source this script in RStudio or run it in an R environment.
-# The app will automatically launch in a web browser.
-# Ensure that the necessary packages are installed and loaded before running the app.
-# You can install any missing packages using install.packages("package_name").

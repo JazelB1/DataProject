@@ -1,27 +1,18 @@
-# Install necessary packages if you haven't already
-# install.packages("aws.s3")
-# install.packages("readr") # For read_csv
-# install.packages("dplyr")
-# install.packages("purrr")
-# install.packages("stringr") # Add this line if you need to install it
-
 # Load the packages
 library(aws.s3)
 library(readr) # For read_csv
 library(dplyr)
 library(purrr)
-library(stringr) # Make sure this line is present
+library(stringr) 
 
 # --- S3 Configuration ---
-# Set your AWS credentials and S3 bucket details
 aws_access_key <- Sys.getenv("AWS_ACCESS_KEY_ID")
 aws_secret_key <- Sys.getenv("AWS_SECRET_ACCESS_KEY")
 region_aws <-Sys.getenv("AWS_REGION")
-#head(aws.s3::bucketlist())
 
-bucket_name <- "new-apprentice-raw-data" # Replace with your S3 bucket name
-s3_folder_path <- "raw_excel_data/" # Replace with the folder path within your S3 bucket (e.g., "excel_data/")
-# Make sure to include a trailing slash if it's a folder
+bucket_name <- "new-apprentice-raw-data" 
+s3_folder_path <- "raw_excel_data/" 
+
 
 
 # --- Define Columns to Select and Standardize ---
@@ -45,9 +36,6 @@ columns_to_keep <- c(
 )
 
 # --- Define desired FINAL column types ---
-# Use functions directly for type conversion after data is read and columns are renamed.
-# This makes conversion more explicit and handles NAs gracefully.
-# Be careful to pick the correct type (e.g., as.integer vs as.numeric)
 desired_final_col_types <- list(
   "Apprentice Number" = as.character,
   "Program Number" = as.character,
@@ -121,7 +109,7 @@ for (file_key in target_files_s3) {
     
     message(paste("  Raw columns in", basename(file_key), ":", paste(names(df_raw), collapse = ", ")))
     
-    # --- Column Selection and Renaming (REVISED APPROACH) ---
+    # --- Column Selection and Renaming ---
     # Create a list to hold the processed data frame
     temp_processed_df <- data.frame(row.names = seq_len(nrow(df_raw))) # Start with empty df with correct num rows
     
@@ -184,12 +172,10 @@ if (successful_files_count > 0) {
   
   
   
-  # --- NEW SECTION: Save DataFrame to S3 as CSV ---
+  # --- Save DataFrame to S3 as CSV ---
   message("\n--- Saving final_union_df to S3 ---")
   
   # 1. Define the S3 output path and filename
-  # It's good practice to put processed data in a different folder, e.g., "processed_data/"
-  # You can also add a timestamp to the filename to avoid overwriting previous runs.
   output_s3_folder <- "processed_apprentice_data/" # Or "your_output_folder/"
   output_filename <- paste0("union_apprentice_data_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".csv")
   s3_output_key <- paste0(output_s3_folder, output_filename) # Full path in S3
@@ -199,8 +185,7 @@ if (successful_files_count > 0) {
   
   tryCatch({
     # 3. Write the data frame to the local temporary CSV file
-    # Use write_csv from readr package for consistent behavior
-    write_csv(final_union_df, local_temp_output_file, na = "", append = FALSE) # na="" writes NA as empty string
+    write_csv(final_union_df, local_temp_output_file, na = "", append = FALSE) 
     
     # 4. Upload the local temporary CSV file to S3
     message(paste0("  Uploading '", basename(local_temp_output_file), "' to s3://", bucket_name, "/", s3_output_key))
@@ -208,7 +193,7 @@ if (successful_files_count > 0) {
       file = local_temp_output_file,
       object = s3_output_key,
       bucket = bucket_name,
-      multipart = TRUE # Recommended for larger files
+      multipart = TRUE 
     )
     message(paste0("  Successfully saved data to s3://", bucket_name, "/", s3_output_key))
     
